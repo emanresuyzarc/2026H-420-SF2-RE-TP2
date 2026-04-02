@@ -1,6 +1,5 @@
 from expression import Expression
 
-
 class Polynome(Expression):
     """Polynome represente par une liste de coefficients [a0, a1, a2, ...]."""
 
@@ -10,34 +9,60 @@ class Polynome(Expression):
 
 
     def evaluer(self, x: float) -> float:
-        """Retourne la valeur numerique de l'expression pour x."""
+        valeur_numerique = 0
+
+        for i, element in enumerate(self.liste_coef):
+            valeur_numerique += element*(x**i)
+
+        return valeur_numerique
 
 
     def deriver(self) -> "Expression":
         expr_derivee = []
-        i = 0
-        for element in self.liste_coef:
-            expr_derivee.append(element*i)
-            i += 1
+
+        for i, element in enumerate(self.liste_coef):
+            if i > 0:
+                expr_derivee.append(element*i)
 
         return Polynome(expr_derivee)
 
 
     def __str__(self) -> str:
-        expr_lisible = []
-        i = 0
+        expr_lisible = ""
+        premier = True
 
-        for element in self.liste_coef:
+        for i, element in enumerate(self.liste_coef):
+            if element == 0:
+                continue
+
+            element_valeur_absolue = abs(element)
+
+            # Construction du terme
             if i == 0:
-                terme = element
-
+                terme = f"{element_valeur_absolue}"
             elif i == 1:
-                terme = f"{element}x"
+                if element_valeur_absolue == 1:
+                    terme = "x" 
+                else:
+                    terme = f"{element_valeur_absolue}x"
+            else:
+                if element_valeur_absolue == 1:
+                    terme = f"x^{i}"
+                else:
+                    terme = f"{element_valeur_absolue}x^{i}"
+
+
+            if premier:
+                if element < 0:
+                    expr_lisible += f"-{terme}"
+                else:
+                    expr_lisible += f"{terme}"
+                premier = False
 
             else:
-                terme = f"{element}x^{i}"
+                if element < 0:
+                    expr_lisible += f" - {terme}"
+                else:
+                    expr_lisible += f" + {terme}"
 
-        expr_lisible.append(terme)
-
-        return " + ".join(expr_lisible)
-                
+        return expr_lisible
